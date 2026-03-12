@@ -70,3 +70,12 @@ The app will be available at `http://localhost:5173`
 - **H2 over PostgreSQL:** Chosen for simplicity and ease of evaluation — no Docker setup required. The Spring Data JPA layer is database-agnostic, so switching to PostgreSQL would only require updating `application.properties` and the Maven dependency.
 - **Types in API file:** TypeScript interfaces are co-located with the Axios API functions in `inventoryApi.ts` for simplicity, avoiding runtime import resolution issues with Vite.
 - **What I'd improve with more time:** Add PostgreSQL + Docker Compose, add pagination to the inventory table, add item search/filter, and write more comprehensive integration tests for the frontend.
+
+## 📸 Screenshots
+
+### Staff View (not logged in)
+![ssuser](https://github.com/user-attachments/assets/37106462-68ba-471d-8d50-6f3918379123)
+
+### Admin View (logged in as admin)
+![ssadmin](https://github.com/user-attachments/assets/a85a29af-899b-49b4-873e-c5e0d541409e)
+
