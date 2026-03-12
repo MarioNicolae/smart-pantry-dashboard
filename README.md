@@ -1,7 +1,7 @@
 # 🥫 Smart Pantry Dashboard
 
 A full-stack inventory management app built with Spring Boot and React + TypeScript.
-Staff members can view current stock; administrators can add new items and restock existing ones.
+Staff members can view current stock, administrators can add new items and restock existing ones.
 
 ## 🛠️ Tech Stack
 
@@ -67,9 +67,9 @@ The app will be available at `http://localhost:5173`
 
 ## 💡 Decisions & Trade-offs
 
-- **H2 over PostgreSQL:** Chosen for simplicity and ease of evaluation — no Docker setup required. The Spring Data JPA layer is database-agnostic, so switching to PostgreSQL would only require updating `application.properties` and the Maven dependency.
+- **H2 over PostgreSQL:** Chosen for simplicity and ease of evaluation, no Docker setup required. The Spring Data JPA layer is database-agnostic, so switching to PostgreSQL would only require updating `application.properties` and the Maven dependency.
 - **Types in API file:** TypeScript interfaces are co-located with the Axios API functions in `inventoryApi.ts` for simplicity, avoiding runtime import resolution issues with Vite.
-- **What I'd improve with more time:** Add PostgreSQL + Docker Compose, add pagination to the inventory table, add item search/filter, and write more comprehensive integration tests for the frontend.
+- **What I'd improve with more time:** Add PostgreSQL + Docker Compose, add pagination to the inventory table, add item search/filter and write more comprehensive integration tests for the frontend.
 
 ## 📸 Screenshots
 
