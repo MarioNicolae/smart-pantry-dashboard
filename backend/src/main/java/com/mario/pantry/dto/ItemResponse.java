@@ -14,5 +14,6 @@ public class ItemResponse {
     private String name;
     private Integer quantity;
     private Integer minThreshold;
+    @com.fasterxml.jackson.annotation.JsonProperty("isLowStock")
     private boolean isLowStock;
 }
