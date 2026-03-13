@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import type { AuthState } from '../api/inventoryApi';
+import axios from 'axios';
+
 interface LoginFormProps {
     onLogin: (auth: AuthState) => void;
     onLogout: () => void;
@@ -7,13 +9,13 @@ interface LoginFormProps {
 }
 
 /**
- * Login form component for Basic Auth authentication
- * Stores credentials in component state and passes them up to app.
+ * Login form component for Basic Auth authentication, verifies credentials against the backend before accepting the login.
  */
 const LoginForm = ({ onLogin, onLogout, auth }: LoginFormProps) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleLogin = async () => {
         if (!username || !password) {
@@ -21,21 +23,30 @@ const LoginForm = ({ onLogin, onLogout, auth }: LoginFormProps) => {
             return;
         }
         try {
+            setLoading(true);
+            setError('');
+            // Verify credentials against the backend before accepting login
+            await axios.get('http://localhost:8080/api/items', {
+                headers: {
+                    Authorization: 'Basic ' + btoa(username + ':' + password),
+                },
+            });
             const isAdmin = username === 'admin';
             onLogin({ username, password, isLoggedIn: true, isAdmin });
-            setError('');
         } catch {
             setError('Login failed. Please check your credentials.');
+        } finally {
+            setLoading(false);
         }
     };
 
     if (auth.isLoggedIn) {
         return (
             <div className="login-bar">
-        <span>
-          Logged in as <strong>{auth.username}</strong>
-            {auth.isAdmin && <span className="admin-badge">ADMIN</span>}
-        </span>
+                <span>
+                    Logged in as <strong>{auth.username}</strong>
+                    {auth.isAdmin && <span className="admin-badge">ADMIN</span>}
+                </span>
                 <button onClick={onLogout} className="btn btn-logout">
                     Logout
                 </button>
@@ -60,8 +71,8 @@ const LoginForm = ({ onLogin, onLogout, auth }: LoginFormProps) => {
                 className="input"
                 onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
             />
-            <button onClick={handleLogin} className="btn btn-login">
-                Login
+            <button onClick={handleLogin} disabled={loading} className="btn btn-login">
+                {loading ? 'Logging in...' : 'Login'}
             </button>
             {error && <span className="error-text">{error}</span>}
         </div>

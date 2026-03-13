@@ -30,7 +30,7 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-const authHeader = (u, p) => ({ Authorization: 'Basic ' + btoa(u + ':' + p) });
+const authHeader = (u: string, p: string) => ({ Authorization: 'Basic ' + btoa(u + ':' + p) });
 
 export const getAllItems = async () => (await api.get('/api/items')).data;
 
