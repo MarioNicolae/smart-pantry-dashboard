@@ -1,36 +1,62 @@
 # 🥫 Smart Pantry Dashboard
 
-A full-stack inventory management app built with Spring Boot and React + TypeScript.
-Staff members can view current stock, administrators can add new items and restock existing ones.
+A full-stack inventory management application.
+Staff members can view current stock levels, administrators can add new items, restock existing ones and delete entries.
+
+---
 
 ## 🛠️ Tech Stack
 
-- **Backend:** Java, Spring Boot 3, Spring Security, Spring Data JPA, H2 (in-memory)
-- **Frontend:** React, TypeScript, Vite, Axios
-- **Testing:** JUnit, Mockito, Spring MockMvc
+| Layer | Technology |
+|---|---|
+| Backend | Java 21, Spring Boot 3, Spring Security, Spring Data JPA |
+| Database | H2 (in-memory) |
+| Frontend | React 19, TypeScript, Vite, Axios |
+| Testing | JUnit 5, Mockito, Spring MockMvc |
+| Build | Maven Wrapper (no local Maven install required) |
+
+---
 
 ## 🚀 How to Run
 
-### Backend
+### Prerequisites
+- Java 21+
+- Node.js 18+
+
+No Docker required — the app uses H2 in-memory database out of the box.
+
+### 1. Backend
+
 ```bash
 cd backend
-.\mvnw spring-boot:run
+.\mvnw spring-boot:run        # Windows
+./mvnw spring-boot:run        # Mac/Linux
 ```
-The API will be available at `http://localhost:8080`
 
-### Frontend
+The API will start at **http://localhost:8080**
+
+On first run, Maven will download dependencies automatically via the wrapper — no local Maven install needed.
+
+### 2. Frontend
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-The app will be available at `http://localhost:5173`
 
-### Test Credentials
-| Username | Password | Role  |
-|----------|----------|-------|
-| user     | password | USER  |
-| admin    | password | ADMIN |
+The app will be available at **http://localhost:5173**
+
+> ⚠️ The backend must be running before the frontend, as it calls the API on load.
+
+### 3. Test Credentials
+
+| Username | Password | Role | Access |
+|----------|----------|------|--------|
+| `user` | `password` | USER | View inventory only |
+| `admin` | `password` | ADMIN | Full access (add, restock, delete) |
+
+---
 
 ## 📡 API Endpoints
 
@@ -41,29 +67,66 @@ The app will be available at `http://localhost:5173`
 | PATCH | `/api/items/{id}/restock` | ADMIN | Add stock to an item |
 | DELETE | `/api/items/{id}` | ADMIN | Delete an item |
 
-## ✅ Features
+## 🏗️ Architecture
 
-### Backend
-- Layered architecture: Controller → Service → Repository
-- Computed `isLowStock` field (true when `quantity < minThreshold`)
-- Basic Auth with two in-memory users (USER and ADMIN roles)
-- Input validation with meaningful error responses (400 with field details)
-- Global exception handler for clean JSON error responses
+The backend follows a standard layered architecture:
 
-### Frontend
-- Inventory table with live data from the backend
-- Low stock items highlighted in red
-- Login form with Basic Auth (credentials stored in component state)
-- Admin panel: Add Item form + Restock and Delete buttons per row
-- Table updates immediately after restock/add/delete without page reload
-- Loading spinner and error states
-- Logout functionality
+```
+HTTP Request
+    │
+    ▼
+InventoryController        (REST layer — maps HTTP to service calls)
+    │
+    ▼
+InventoryService           (Business logic — isLowStock computation, orchestration)
+    │
+    ▼
+InventoryItemRepository    (Data access — Spring Data JPA)
+    │
+    ▼
+H2 Database
+```
 
-### Tests
-- Unit tests for `isLowStock` boundary logic (equal, below, above threshold)
-- Integration test: POST without credentials → 401
-- Integration test: POST with ADMIN credentials → 201
-- Integration test: POST with USER credentials → 403
+## ✅ Features Implemented
+
+### Backend (Mandatory)
+- [x] `InventoryItem` entity with `id`, `name`, `quantity`, `minThreshold`
+- [x] `GET /api/items` — public, returns all items with computed `isLowStock`
+- [x] `POST /api/items` — ADMIN only, creates a new item
+- [x] `PATCH /api/items/{id}/restock` — ADMIN only, adds to current stock
+- [x] Basic Auth with two hardcoded in-memory users (`user` / `admin`)
+- [x] Standard layered architecture: Controller → Service → Repository
+
+### Backend (Optional)
+- [x] `DELETE /api/items/{id}` endpoint
+- [x] Input validation with meaningful structured error responses
+- [x] H2 in-memory database (PostgreSQL-ready via JPA abstraction)
+
+### Frontend (Mandatory)
+- [x] Inventory table displaying name, quantity, minThreshold
+- [x] Low stock items visually distinct (red text, warning icon, highlighted row)
+- [x] Login form with Basic Auth — credentials verified against the backend before login is accepted
+- [x] Restock button per row — visible only when logged in as admin
+- [x] Table updates immediately after restock without full page reload
+
+### Frontend (Optional)
+- [x] Add Item form for admins
+- [x] Delete button per row for admins
+- [x] Logout functionality
+- [x] Loading spinner while fetching
+- [x] Error states on failed requests
+
+### Testing (Mandatory)
+- [x] Unit test: `isLowStock` is false when `quantity == minThreshold`
+- [x] Unit test: `isLowStock` is true when `quantity < minThreshold`
+- [x] Unit test: `isLowStock` is false when `quantity > minThreshold`
+
+### Testing (Optional)
+- [x] Integration test: `POST /api/items` without credentials → 401
+- [x] Integration test: `POST /api/items` with ADMIN credentials → 201
+- [x] Integration test: `POST /api/items` with USER credentials → 403
+
+---
 
 ## 💡 Decisions & Trade-offs
 
